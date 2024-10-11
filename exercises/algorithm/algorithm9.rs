@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -36,8 +35,34 @@ where
         self.len() == 0
     }
 
+    fn heapify_up(&mut self) {
+        let mut p = self.count;
+        while p > 1 {
+            let fa = self.parent_idx(p);
+            if (self.comparator)(&self.items[p], &self.items[fa]) {
+                self.items.swap(p, fa);
+            }
+            p = fa;
+        }
+    }
+
+    fn heapify_down(&mut self) {
+        let mut p = 1;
+        while let ch = self.smallest_child_idx(p) {
+            if ch == 0 {
+                break;
+            }
+            if !(self.comparator)(&self.items[p], &self.items[ch]) {
+                self.items.swap(p, ch);
+            }
+            p = ch;
+        }
+    }
     pub fn add(&mut self, value: T) {
         //TODO
+        self.items.push(value);
+        self.count += 1;
+        self.heapify_up();
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +82,17 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        if idx > self.count || !self.children_present(idx) {
+            return 0;
+        }
+        if self.right_child_idx(idx) > self.count {
+            return self.left_child_idx(idx);
+        }
+        if (self.comparator)(&self.items[self.left_child_idx(idx)], &self.items[self.right_child_idx(idx)]) {
+            self.left_child_idx(idx)
+        } else {
+            self.right_child_idx(idx)
+        }
     }
 }
 
@@ -85,7 +119,14 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+		if self.count == 0 {
+			return None;
+		}
+        self.items.swap(1, self.count);
+        let ret = self.items.pop();
+        self.count -= 1;
+        self.heapify_down();
+        ret
     }
 }
 

@@ -2,8 +2,6 @@
 	binary_search tree
 	This problem requires you to implement a basic interface for a binary tree
 */
-
-//I AM NOT DONE
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -51,12 +49,36 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+        let mut p = &mut self.root;
+        loop {
+            match p {
+                None => {
+                    *p = Some(Box::new(TreeNode::new(value)));
+                    return;
+                }
+                Some(node) => {
+                    match node.value.cmp(&value) {
+                        Ordering::Equal => return,
+                        Ordering::Less => p = &mut node.right,
+                        Ordering::Greater => p = &mut node.left,
+                    }
+                }
+            }
+        }
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+        let mut p = &self.root;
+        while p.is_some() {
+            match p.as_ref().unwrap().value.cmp(&value) {
+                Ordering::Equal => return true,
+                Ordering::Less => p = &p.as_ref().unwrap().right,
+                Ordering::Greater => p = &p.as_ref().unwrap().left,
+            }
+        }
+        false
     }
 }
 
